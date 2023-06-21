@@ -64,7 +64,7 @@ int PyEntry::run(const char* init_file) {
         int len = sprintf(
             buffer,
             "from pip._internal.cli.main import main as _main\n"
-            "_main(['install', '-r', r'%s'])\n",
+            "_main(['install', '--no-warn-script-location', '-r', r'%s'])\n",
             init_file
         );
         std::unique_ptr<char> cmd(new char[len + 1]);
