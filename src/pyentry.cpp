@@ -39,7 +39,7 @@ PyEntry::PyEntry():
 
 PyEntry::PyEntry(const char* dll_dir): _selfpy(false) {
     char _dll_path[100];
-    int len = std::sprintf(_dll_path, "%s/python38.dll", dll_dir);
+    int len = std::sprintf(_dll_path, "%s/python3.dll", dll_dir);
     // char* dll_path = new char[len + 1];
     std::unique_ptr<char> dll_path(new char[len + 1]);
     memcpy(dll_path.get(), _dll_path, sizeof(char) * len);
