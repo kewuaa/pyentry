@@ -71,6 +71,10 @@ int PyEntry::run(const char* init_file) {
         memcpy(cmd.get(), buffer, sizeof(char) * len);
         cmd.get()[len] = 0;
         _run_string(cmd.get());
+        _run_string(
+            "import site, importlib\n"
+            "importlib.reload(site)\n"
+        );
     }
     return _run_string(
         "from pathlib import Path\n"
