@@ -1,4 +1,4 @@
-#pyentry
+# pyentry
 
 useful when packing python program(using embbed python).
 will auto load the program which has the same name with the entry.
