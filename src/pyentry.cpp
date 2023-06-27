@@ -37,9 +37,9 @@ PyEntry::PyEntry():
     _init_pyfunction();
 }
 
-PyEntry::PyEntry(const char* dll_dir): _selfpy(false) {
+PyEntry::PyEntry(const char* dll_dir, unsigned int py_version): _selfpy(false) {
     char _dll_path[100];
-    int len = std::sprintf(_dll_path, "%s/python3.dll", dll_dir);
+    int len = std::sprintf(_dll_path, "%s/python%u.dll", dll_dir, py_version);
     // char* dll_path = new char[len + 1];
     std::unique_ptr<char> dll_path(new char[len + 1]);
     memcpy(dll_path.get(), _dll_path, sizeof(char) * len);
@@ -47,6 +47,10 @@ PyEntry::PyEntry(const char* dll_dir): _selfpy(false) {
     DEBUG("try to load dll -> %s\n", dll_path.get());
     _pydll = LoadLibraryA(dll_path.get());
     _init_pyfunction();
+    _run_string(
+        "from sys import path\n"
+        "path.append('./runtime/Lib')"
+    );
     // delete[] dll_path;
 }
 
