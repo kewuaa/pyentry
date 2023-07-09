@@ -1,6 +1,6 @@
 const std = @import("std");
 const W = std.unicode.utf8ToUtf16LeStringLiteral;
-extern fn init_entry([*c]const u8, u32, [*c]const u8) callconv(.C) c_int;
+extern fn init_entry([*c]const u8, [*c]const u8) callconv(.C) c_int;
 
 
 pub fn main() !void {
@@ -18,12 +18,8 @@ pub fn main() !void {
     var args = try std.process.argsWithAllocator(al);
     defer args.deinit();
     _ = args.next();
-    var dll_dir: [*c]const u8 = undefined;
-    var py_version: u32 = undefined;
-    dll_dir = args.next() orelse null;
-    if (args.next()) |arg| {
-        py_version = try std.fmt.parseInt(u32, arg, 10);
-    } else py_version = 38;
+    var dll_path: [*c]const u8 = undefined;
+    dll_path = args.next() orelse null;
     if (dependencies_file) |file| {
         defer {
             var old_path = al.alloc(u16, file.len + 1) catch null;
@@ -54,9 +50,9 @@ pub fn main() !void {
         for (0.., file) |i, v| {
             path[i] = v;
         }
-        _ = init_entry(dll_dir, py_version, path[0..file.len:0]);
+        _ = init_entry(dll_path, path[0..file.len:0]);
     } else {
-        _ = init_entry(dll_dir, py_version, null);
+        _ = init_entry(dll_path, null);
     }
 }
 
