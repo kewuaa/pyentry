@@ -1,5 +1,8 @@
 const std = @import("std");
 const W = std.unicode.utf8ToUtf16LeStringLiteral;
+const windows = @cImport({
+    @cInclude("windows.h");
+});
 extern fn init_entry([*c]const u8, [*c]const u8) callconv(.C) c_int;
 
 
@@ -52,6 +55,10 @@ pub fn main() !void {
         }
         _ = init_entry(dll_path, path[0..file.len:0]);
     } else {
+        const hwnd = windows.FindWindowA("ConsoleWindowClass", null);
+        if (hwnd) |_hwnd| {
+            _ = windows.ShowWindow(_hwnd, windows.SW_HIDE);
+        }
         _ = init_entry(dll_path, null);
     }
 }
