@@ -21,8 +21,18 @@ pub fn main() !void {
     var args = try std.process.argsWithAllocator(al);
     defer args.deinit();
     _ = args.next();
-    var dll_path: [*c]const u8 = undefined;
-    dll_path = args.next() orelse null;
+    var dll_path: [*c]const u8 = null;
+    var hide_console_window = true;
+    while (args.next()) |arg| {
+        if (std.mem.startsWith(u8, arg, "--")) {
+            if (std.mem.startsWith(u8, arg[2..], "pydll=")) {
+                if (arg.len < 9) @panic("invalid input");
+                dll_path = arg[8..];
+            } else if (std.mem.startsWith(u8, arg[2..], "show-console")) {
+                hide_console_window = false;
+            }
+        }
+    }
     if (dependencies_file) |file| {
         defer {
             var old_path = al.alloc(u16, file.len + 1) catch null;
@@ -55,9 +65,11 @@ pub fn main() !void {
         }
         _ = init_entry(dll_path, path[0..file.len:0]);
     } else {
-        const hwnd = windows.FindWindowA("ConsoleWindowClass", null);
-        if (hwnd) |_hwnd| {
-            _ = windows.ShowWindow(_hwnd, windows.SW_HIDE);
+        if (hide_console_window) {
+            const hwnd = windows.FindWindowA("ConsoleWindowClass", null);
+            if (hwnd) |_hwnd| {
+                _ = windows.ShowWindow(_hwnd, windows.SW_HIDE);
+            }
         }
         _ = init_entry(dll_path, null);
     }
