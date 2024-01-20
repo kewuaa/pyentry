@@ -34,7 +34,15 @@ pub fn main() !void {
         }
     }
     if (dependencies_file) |file| {
-        defer {
+        var path = try al.alloc(u8, file.len + 1);
+        defer al.free(path);
+        path[file.len] = 0;
+        for (0.., file) |i, v| {
+            path[i] = v;
+        }
+        _ = init_entry(dll_path, path[0..file.len:0]);
+        // rename
+        {
             var old_path = al.alloc(u16, file.len + 1) catch null;
             var new_path = al.alloc(u16, file.len + 2) catch null;
             if (new_path) |new| {
@@ -57,16 +65,10 @@ pub fn main() !void {
                 }
             }
         }
-        var path = try al.alloc(u8, file.len + 1);
-        defer al.free(path);
-        path[file.len] = 0;
-        for (0.., file) |i, v| {
-            path[i] = v;
-        }
-        _ = init_entry(dll_path, path[0..file.len:0]);
     } else {
         if (hide_console_window) {
-            const hwnd = windows.FindWindowA("ConsoleWindowClass", null);
+            const hwnd = windows.GetConsoleWindow();
+            // const hwnd = windows.FindWindowA("ConsoleWindowClass", null);
             if (hwnd) |_hwnd| {
                 _ = windows.ShowWindow(_hwnd, windows.SW_HIDE);
             }
