@@ -10,9 +10,9 @@ private:
     void _init_pyfunction();
     int _run_string(const char* s);
 public:
-    PyEntry();
     PyEntry(const char* dll_path);
     ~PyEntry();
-    int run(const char* init_file);
+    void install_deps(const char* dep_file);
+    int run();
 };
 }
